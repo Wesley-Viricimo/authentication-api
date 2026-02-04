@@ -35,6 +35,7 @@ public class JwtTokenProvider {
                 .subject(userSecurity.getUsername())
                 .claim("userId", userSecurity.getId())
                 .claim("role", userSecurity.getAuthorities().iterator().next().getAuthority())
+                .claim("isActive", userSecurity.getIsActive())
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(key)
@@ -68,8 +69,9 @@ public class JwtTokenProvider {
         String email = claims.getSubject();
         Long userId = claims.get("userId", Long.class);
         String role = claims.get("role", String.class);
+        boolean isActive = claims.get("isActive", Boolean.class);
 
-        UserSecurity userDetails = new UserSecurity(userId, email, role);
+        UserSecurity userDetails = new UserSecurity(userId, email, role, isActive);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 }

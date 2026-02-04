@@ -29,6 +29,9 @@ public class User implements Serializable {
     @Column(name = "PASSWORD", length = 60, nullable = false)
     private String password;
 
+    @Column(name = "IS_ACTIVE", nullable = false)
+    private boolean isActive;
+
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt;
 
@@ -42,6 +45,7 @@ public class User implements Serializable {
         this.role = role;
         this.email = email;
         this.password = password;
+        this.isActive = true;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
@@ -84,6 +88,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     public LocalDateTime getCreatedAt() {

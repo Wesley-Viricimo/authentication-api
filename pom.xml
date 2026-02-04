@@ -21,16 +21,19 @@
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter Web: Fornece suporte para criar aplicações web RESTful com Tomcat embutido -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <!-- Spring Boot Starter Data JPA: Fornece suporte para persistência de dados usando JPA/Hibernate -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Spring Boot DevTools: Fornece reinicialização automática durante desenvolvimento para agilizar o processo -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -38,32 +41,63 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Spring Boot Starter Validation: Fornece suporte para validação de dados usando Bean Validation (JSR-303) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <!-- Spring Security Crypto: Fornece utilitários de criptografia para senhas (BCrypt, etc) -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
+        <!-- Spring Boot Starter Security: Fornece autenticação e autorização para proteger a aplicação -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+        <!-- JJWT API: Interface para criação e validação de tokens JWT (JSON Web Tokens) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.12.5</version>
         </dependency>
 
+        <!-- JJWT Implementation: Implementação runtime da biblioteca JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JJWT Jackson: Fornece suporte para serialização/deserialização JSON dos tokens JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.5</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- H2 Database: Banco de dados relacional em memória para desenvolvimento e testes -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Maven Plugin: Plugin para empacotar e executar a aplicação Spring Boot -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
