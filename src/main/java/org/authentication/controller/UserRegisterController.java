@@ -23,7 +23,7 @@ public class UserRegisterController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseDataDTO<UserResponseDTO>> create(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+    public ResponseEntity<ResponseDataDTO<UserResponseDTO>> createUser(@Valid @RequestBody UserCreateRequestDTO userCreateRequestDTO) {
         ResponseDataDTO<UserResponseDTO> response = userRegisterService.createUser(userCreateRequestDTO, UserRole.USER);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

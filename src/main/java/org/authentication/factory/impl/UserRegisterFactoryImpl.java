@@ -6,18 +6,18 @@ import org.authentication.domain.enums.UserRole;
 import org.authentication.exceptions.DataIntegrityViolationException;
 import org.authentication.factory.interfaces.UserRegisterFactory;
 import org.authentication.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
 public class UserRegisterFactoryImpl implements UserRegisterFactory {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserRegisterFactoryImpl(UserRepository userRepository) {
+    public UserRegisterFactoryImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User createUser(UserCreateRequestDTO userCreateRequestDTO, UserRole role) {
