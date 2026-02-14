@@ -47,4 +47,10 @@ public class AuthService implements UserDetailsService {
         MessageResponseDTO message = new MessageResponseDTO("success", "Sucesso", List.of("Token atualizado com sucesso"));
         return new ResponseDataDTO<>(refreshResponse, message, HttpStatus.OK.value());
     }
+
+    public ResponseDataDTO<MessageResponseDTO> logout() {
+        this.authFactory.invalidateRefreshToken();
+        MessageResponseDTO message = new MessageResponseDTO("success", "Sucesso", List.of("Logout realizado com sucesso, refresh token invalidado"));
+        return new ResponseDataDTO<>(null, message, HttpStatus.OK.value());
+    }
 }
