@@ -1,9 +1,11 @@
 package org.authentication.service;
 
 import org.authentication.domain.dto.request.AuthRequestDTO;
+import org.authentication.domain.dto.request.RefreshTokenRequestDTO;
 import org.authentication.domain.dto.response.AuthResponseDTO;
 import org.authentication.domain.dto.response.MessageResponseDTO;
 import org.authentication.domain.dto.response.ResponseDataDTO;
+import org.authentication.domain.entity.RefreshToken;
 import org.authentication.domain.entity.User;
 import org.authentication.factory.interfaces.AuthFactory;
 import org.authentication.repository.UserRepository;
@@ -33,8 +35,16 @@ public class AuthService implements UserDetailsService {
     }
 
     public ResponseDataDTO<AuthResponseDTO> authenticate(AuthRequestDTO data) {
-        AuthResponseDTO authResponse = new AuthResponseDTO(this.authFactory.createToken(data));
+        AuthResponseDTO authResponse = this.authFactory.createToken(data);
         MessageResponseDTO message = new MessageResponseDTO("success", "Sucesso", List.of("Autenticação realizada com sucesso"));
         return new ResponseDataDTO<>(authResponse, message, HttpStatus.OK.value());
+    }
+
+    public ResponseDataDTO<AuthResponseDTO> refreshToken(RefreshTokenRequestDTO data) {
+        RefreshToken refreshToken = this.authFactory.validateRefreshToken(data.refreshToken());
+        UserDetails userDetails = loadUserByUsername(refreshToken.getUser().getEmail());
+        AuthResponseDTO refreshResponse = this.authFactory.createRefreshToken(userDetails, data.refreshToken());
+        MessageResponseDTO message = new MessageResponseDTO("success", "Sucesso", List.of("Token atualizado com sucesso"));
+        return new ResponseDataDTO<>(refreshResponse, message, HttpStatus.OK.value());
     }
 }

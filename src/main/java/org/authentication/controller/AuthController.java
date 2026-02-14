@@ -2,6 +2,7 @@ package org.authentication.controller;
 
 import jakarta.validation.Valid;
 import org.authentication.domain.dto.request.AuthRequestDTO;
+import org.authentication.domain.dto.request.RefreshTokenRequestDTO;
 import org.authentication.domain.dto.response.AuthResponseDTO;
 import org.authentication.domain.dto.response.ResponseDataDTO;
 import org.authentication.service.AuthService;
@@ -22,7 +23,13 @@ public class AuthController {
 
     @PostMapping
     public ResponseEntity<ResponseDataDTO<AuthResponseDTO>> login(@Valid @RequestBody AuthRequestDTO authRequest) {
-        ResponseDataDTO<AuthResponseDTO> response = authService.authenticate(authRequest);
+        ResponseDataDTO<AuthResponseDTO> response = this.authService.authenticate(authRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ResponseDataDTO<AuthResponseDTO>> refreshToken(@Valid @RequestBody RefreshTokenRequestDTO request) {
+        ResponseDataDTO<AuthResponseDTO> response = this.authService.refreshToken(request);
         return ResponseEntity.ok(response);
     }
 }

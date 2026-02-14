@@ -1,5 +1,6 @@
 package org.authentication.domain.dto.response;
 
 public record AuthResponseDTO(
-        String token
+        String accessToken,
+        String refreshToken
 ) {}

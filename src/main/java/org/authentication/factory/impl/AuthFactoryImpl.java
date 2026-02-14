@@ -1,31 +1,46 @@
 package org.authentication.factory.impl;
 
 import org.authentication.domain.dto.request.AuthRequestDTO;
+import org.authentication.domain.dto.response.AuthResponseDTO;
+import org.authentication.domain.entity.RefreshToken;
 import org.authentication.domain.entity.User;
+import org.authentication.exceptions.NotFoundException;
 import org.authentication.exceptions.UserInactiveException;
 import org.authentication.factory.interfaces.AuthFactory;
+import org.authentication.repository.RefreshTokenRepository;
 import org.authentication.repository.UserRepository;
 import org.authentication.security.UserSecurity;
 import org.authentication.security.jwt.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class AuthFactoryImpl implements AuthFactory {
     private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public AuthFactoryImpl(UserRepository userRepository, JwtTokenProvider jwtTokenProvider, @Lazy AuthenticationManager authenticationManager) {
+    @Value("${api.security.refresh-token.expiration}")
+    private Long refreshTokenExpiration;
+
+    public AuthFactoryImpl(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, JwtTokenProvider jwtTokenProvider, @Lazy AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
     }
 
-    public String createToken(AuthRequestDTO data) {
+    public AuthResponseDTO createToken(AuthRequestDTO data) {
         User user = this.userRepository.findByEmail(data.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não está cadastrado no sistema"));
 
@@ -34,8 +49,57 @@ public class AuthFactoryImpl implements AuthFactory {
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
 
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-        var userSecurity = (UserSecurity) auth.getPrincipal();
-        return this.jwtTokenProvider.createToken(userSecurity);
+        Authentication auth = this.authenticationManager.authenticate(usernamePassword);
+        UserSecurity userSecurity = (UserSecurity) auth.getPrincipal();
+
+        String accessToken = this.jwtTokenProvider.createToken(userSecurity);
+        String refreshToken = createRefreshToken(user);
+
+        return new AuthResponseDTO(accessToken, refreshToken);
+    }
+
+    public AuthResponseDTO createRefreshToken(UserDetails userDetails, String refreshToken) {
+        var userSecurity = (UserSecurity) userDetails;
+        String newAccessToken = this.jwtTokenProvider.createToken(userSecurity);
+        String newRefreshToken = this.refreshToken(refreshToken);
+
+        return new AuthResponseDTO(newAccessToken, newRefreshToken);
+    }
+
+    private String createRefreshToken(User user) {
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusSeconds(refreshTokenExpiration / 1000);
+
+        RefreshToken refreshToken = new RefreshToken(token, user, expiryDate);
+        refreshTokenRepository.save(refreshToken);
+
+        return token;
+    }
+
+    private String refreshToken(String oldRefreshToken) {
+        RefreshToken refreshToken = validateRefreshToken(oldRefreshToken);
+
+        refreshToken.setRevoked(true);
+        this.refreshTokenRepository.save(refreshToken);
+
+        return createRefreshToken(refreshToken.getUser());
+    }
+
+    public RefreshToken validateRefreshToken(String token) {
+        RefreshToken refreshToken = this.refreshTokenRepository.findByToken(token)
+                .orElseThrow(() -> new NotFoundException("Refresh token não encontrado"));
+
+        if (refreshToken.isRevoked()) throw new NotFoundException("Refresh token foi revogado");
+        if (refreshToken.isExpired()) throw new NotFoundException("Refresh token expirou");
+
+        return refreshToken;
+    }
+
+    public void revokeAllTokensByUser(User user) {
+        var token = this.refreshTokenRepository.findByUser(user);
+        token.ifPresent(rt -> {
+            rt.setRevoked(true);
+            refreshTokenRepository.save(rt);
+        });
     }
 }
