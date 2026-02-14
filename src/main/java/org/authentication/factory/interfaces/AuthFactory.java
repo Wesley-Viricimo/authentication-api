@@ -9,4 +9,5 @@ public interface AuthFactory {
     AuthResponseDTO createToken(AuthRequestDTO data);
     AuthResponseDTO createRefreshToken(UserDetails userDetails, String refreshToken);
     RefreshToken validateRefreshToken(String token);
+    void invalidateRefreshToken();
 }
