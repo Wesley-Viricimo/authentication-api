@@ -28,8 +28,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        var messageResponse = new MessageResponseDTO("error", "Erro", List.of("Acesso negado. Credenciais inválidas ou ausentes."));
-        var exceptionResponse = new ExceptionResponse(messageResponse, HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
+        MessageResponseDTO messageResponse = new MessageResponseDTO("error", "Erro", List.of("Acesso negado. Credenciais inválidas ou ausentes."));
+        ExceptionResponse exceptionResponse = new ExceptionResponse(messageResponse, HttpStatus.UNAUTHORIZED.value(), LocalDateTime.now());
         response.getWriter().write(objectMapper.writeValueAsString(exceptionResponse));
     }
 }
