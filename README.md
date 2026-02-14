@@ -331,12 +331,6 @@ POST /v1/user/logout
 
 ---
 
-## 📄 Licença
-
-Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
-
 ## 👨‍💻 Autor
 
 Desenvolvido por Wesley Viricimo
