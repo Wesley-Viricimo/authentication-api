@@ -6,7 +6,7 @@ Uma API robusta de autenticação e autorização desenvolvida com **Spring Boot
 
 - ✅ Autenticação com **JWT (JSON Web Tokens)**
 - ✅ Sistema de **Refresh Token** com revogação automática
-- ✅ Criptografia de senhas com **BCrypt**
+- ✅ Criptografia de senhas com **Argon2**
 - ✅ Validação de dados com **Bean Validation**
 - ✅ Tratamento customizado de exceções
 - ✅ Segurança com **Spring Security**
@@ -56,10 +56,11 @@ Uma API robusta de autenticação e autorização desenvolvida com **Spring Boot
     <artifactId>spring-boot-starter-validation</artifactId>
 </dependency>
 
-<!-- Spring Security Crypto: Utilitários para criptografia de senhas (BCrypt) -->
+<!-- Bouncy Castle: Provedor de criptografia necessário para o Argon2PasswordEncoder -->
 <dependency>
-    <groupId>org.springframework.security</groupId>
-    <artifactId>spring-security-crypto</artifactId>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk18on</artifactId>
+    <version>1.78.1</version>
 </dependency>
 
 <!-- JJWT: Biblioteca para criação e validação de JSON Web Tokens -->
@@ -284,7 +285,7 @@ Registra um novo usuário com role **ADMIN**
 ```
 POST /v1/auth/login
 ├─ Email e senha são validados
-├─ Senha é verificada contra hash BCrypt
+├─ Senha é verificada contra hash Argon2
 ├─ Access Token (15min) é gerado
 ├─ Refresh Tokens antigos são revogados
 └─ Novo Refresh Token (7 dias) é emitido
@@ -313,7 +314,7 @@ POST /v1/user/logout
 
 ### ✅ Implementado
 - **JWT**: Tokens com assinatura HMAC-SHA256
-- **BCrypt**: Hashing seguro de senhas
+- **Argon2**: Hashing seguro de senhas (vencedor do Password Hashing Competition)
 - **Refresh Token Rotation**: Revogação automática de tokens antigos
 - **Token Expiration**: Access token (15min), Refresh token (7 dias)
 - **CORS**: Configurado para ambiente
